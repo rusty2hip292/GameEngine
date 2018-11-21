@@ -12,12 +12,18 @@ public class Application extends Canvas implements Runnable {
 	private Thread thread;
 	private boolean running = false;
 	
+	Handler handler = new Handler();
+	
 	public static void main(String[] args) {
 		new Application();
 	}
 	
 	public Application() {
 		new ux.Window(WIDTH, HEIGHT, "Game", this);
+		
+		for(int i = 0; i < 5; i++) {
+			handler.addObject(new objects.Player(200, 200, 0));
+		}
 	}
 	
 	public synchronized void start() {
@@ -62,7 +68,7 @@ public class Application extends Canvas implements Runnable {
 	}
 	
 	private void tick() {
-		
+		handler.tick();
 	}
 	private void render() {
 		BufferStrategy bs = this.getBufferStrategy();
@@ -76,6 +82,8 @@ public class Application extends Canvas implements Runnable {
 		g.setColor(Color.black);
 		
 		g.fillRect(0, 0, WIDTH, HEIGHT);
+		
+		handler.render(g);
 		
 		g.dispose();
 		bs.show();
