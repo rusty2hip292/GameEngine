@@ -24,6 +24,12 @@ public class Application extends Canvas implements Runnable {
 	
 	public Application() {
 		window = new ux.Window(WIDTH, HEIGHT, "Game", this);
+		eventlisteners.Mouse m = new eventlisteners.Mouse(this);
+		this.addMouseListener(m);
+		this.addMouseMotionListener(m);
+		this.addMouseWheelListener(m);
+		eventlisteners.Keyboard k = new eventlisteners.Keyboard(this);
+		this.addKeyListener(k);
 	}
 	
 	public synchronized void start() {
