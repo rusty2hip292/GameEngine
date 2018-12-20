@@ -92,6 +92,11 @@ public class Application extends Canvas implements Runnable {
 		
 		g.fillRect(0, 0, WIDTH, HEIGHT);
 		
+		/*
+		 * this is not sustainable
+		 */
+		gameobjects.GameObject.renderObjects(g);
+		
 		g.dispose();
 		bs.show();
 	}

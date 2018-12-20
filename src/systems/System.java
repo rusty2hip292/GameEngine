@@ -40,7 +40,9 @@ public abstract class System implements Runnable {
 	public void handleMessages() {
 		long start = java.lang.System.currentTimeMillis();
 		while(this.mqueue.size() > 0 && java.lang.System.currentTimeMillis() - start <= 15) {
-			handleMessage(mqueue.poll());
+			messages.Message m = mqueue.poll();
+			m.log();
+			handleMessage(m);
 		}
 	}
 	
