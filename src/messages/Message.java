@@ -4,8 +4,7 @@ import java.util.Scanner;
 
 public abstract class Message {
 
-	public static final Class<? extends Message> clazz = messages.types.Null.class;
-	
+	public static Class<? extends Message> clazz = messages.types.Null.class;
 	private static Scanner scanner;
 	
 	protected static String type;

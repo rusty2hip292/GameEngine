@@ -17,6 +17,70 @@ public class E6POS {
 	private static Matrix temp;
 	private static HashMap<String, Double> theta = new HashMap<String, Double>();
 	
+	private vector.Vector pos;
+	private Matrix ori = identity.copy();
+	private double a, b, c;
+	
+	public E6POS(double x, double y, double z, double a, double b, double c) {
+		pos = new vector.Vector(x, y, z);
+		ori = transformAxisABC(ori, a, b, c);
+		this.a = a; this.b = b; this.c = c;
+	}
+	public E6POS(Vector pos, Matrix ori) {
+		this.pos = pos; this.ori = ori; this.recalcABC();
+	}
+	
+	private void recalcABC() {
+		Matrix units = this.ori;
+		Vector y = units.rowVector(1), z = units.rowVector(2);
+		double sign = y.get(2).div(z.get(2)).evaluate();
+		Vector t = y.sub(z.mult(sign));
+		double d = t.dot(y).div(t.mag()).evaluate();
+		double C = Math.acos(d);
+		if(sign < 0) {
+			C *= -1;
+		}
+		if(degrees) {
+			C *= 180 / Math.PI;
+		}
+		units = transformAxisABC(units, 0, 0, -C);
+		Vector x = units.rowVector(0);
+		double B = -Math.atan2(x.get(2).evaluate(), x.get(0).square().add(x.get(1).square()).sqrt().evaluate());
+		double A = Math.atan2(x.get(1).evaluate(), x.get(0).square().sqrt().evaluate());
+		if(degrees) {
+			A *= 180 / Math.PI;
+			B *= 180 / Math.PI;
+		}
+		this.a = A; this.b = B; this.c = C;
+	}
+	
+	public static E6POS compose(E6POS a, E6POS b) {
+		Matrix o = transformAxisABC(a.ori, b.a, b.b, b.c);
+		Vector pos = a.pos.add(a.ori.colVector(0).mult(b.pos.get(0))).add(a.ori.colVector(1).mult(b.pos.get(1))).add(a.ori.colVector(2).mult(b.pos.get(2)));
+		return new E6POS(pos, o);
+	}
+	
+	public E6POS toGlobal(E6POS base) {
+		return compose(base, this);
+	}
+	
+	public E6POS invert() {
+		Vector p = this.pos.neg();
+		Matrix o = this.transformA(this.transformB(this.transformC(this.ori.copy(), -this.c), -this.b), -this.a);
+		return new E6POS(p, o);
+	}
+	
+	public Function x() {
+		return this.pos.get(0);
+	}
+	
+	public Function y() {
+		return this.pos.get(1);
+	}
+	public Function z() {
+		return this.pos.get(2);
+	}
+	
 	public static void init() {
 		try {
 			cos = Function.parseFunctionFromCleanRPNString("theta cos");
@@ -94,6 +158,9 @@ public class E6POS {
 	}
 	
 	private static Matrix transformA(Matrix init, double A) {
+		if(A == 0) {
+			return init;
+		}
 		theta.put("theta", A);
 		Function x, y;
 		for(int r = 0; r < 3; r++) {
@@ -105,6 +172,9 @@ public class E6POS {
 		return temp;
 	}
 	private static Matrix transformB(Matrix init, double B) {
+		if(B == 0) {
+			return init;
+		}
 		theta.put("theta", B);
 		Function x, z;
 		for(int r = 0; r < 3; r++) {
@@ -116,6 +186,9 @@ public class E6POS {
 		return temp;
 	}
 	private static Matrix transformC(Matrix init, double C) {
+		if(C == 0) {
+			return init;
+		}
 		theta.put("theta", C);
 		Function z, y;
 		for(int r = 0; r < 3; r++) {

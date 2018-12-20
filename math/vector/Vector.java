@@ -23,6 +23,14 @@ public class Vector {
 		}
 	}
 	
+	public Vector neg() {
+		Vector t = this.clone();
+		for(int i = 0; i < t.size(); i++) {
+			t.vect[i] = t.vect[i].neg();
+		}
+		return t;
+	}
+	
 	public Function dot(Vector o) {
 		if(o.size() != this.size()) {
 			throw new IndexOutOfBoundsException();
@@ -63,7 +71,7 @@ public class Vector {
 		}
 		Vector t = this.clone();
 		for(int i = 0; i < v.size(); i++) {
-			t.vect[i] = t.vect[i].add(v.get(i));
+			t.vect[i] = t.vect[i].add(v.vect[i]);
 		}
 		return t;
 	}
@@ -74,7 +82,18 @@ public class Vector {
 		}
 		Vector t = this.clone();
 		for(int i = 0; i < v.size(); i++) {
-			t.vect[i] = t.vect[i].sub(v.get(i));
+			t.vect[i] = t.vect[i].sub(v.vect[i]);
+		}
+		return t;
+	}
+	
+	public Vector innerProduct(Vector v) {
+		if(v.size() > this.size()) {
+			return v.innerProduct(this);
+		}
+		Vector t = this.clone();
+		for(int i = 0; i < v.size(); i++) {
+			t.vect[i] = t.vect[i].mult(v.vect[i]);
 		}
 		return t;
 	}

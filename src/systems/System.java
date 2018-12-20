@@ -35,15 +35,26 @@ public abstract class System implements Runnable {
 	
 	public void claimMessage(messages.Message m) {
 		this.mqueue.add(m);
+		println(m + " claimed by " + this);
 	}
 	
 	public void handleMessages() {
-		long start = java.lang.System.currentTimeMillis();
-		while(this.mqueue.size() > 0 && java.lang.System.currentTimeMillis() - start <= 15) {
+		while(this.mqueue.size() > 0) {
 			messages.Message m = mqueue.poll();
 			m.log();
+			//println("about to handle " + m);
 			handleMessage(m);
 		}
+	}
+	
+	/*
+	 * because this System covers java.lang.System
+	 */
+	public void println(Object o) {
+		java.lang.System.out.println(o);
+	}
+	public void print(Object o) {
+		java.lang.System.out.print(o);
 	}
 	
 	protected abstract void handleMessage(messages.Message m);

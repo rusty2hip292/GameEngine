@@ -1,6 +1,7 @@
 package systems;
 
 import game.Application;
+import gameobjects.GameObject;
 import messages.*;
 
 public class CameraSystem extends System {
@@ -20,9 +21,11 @@ public class CameraSystem extends System {
 
 	@Override
 	protected void handleMessage(messages.Message m) {
+		//java.lang.System.out.println("here");
 		if(m instanceof messages.CameraMessage) {
 			messages.CameraMessage temp = (messages.CameraMessage) m;
 			camera.moveTo(temp.x, temp.y, temp.z, temp.a, temp.b, temp.c);
+			//java.lang.System.out.println(camera.pos());
 		}
 	}
 

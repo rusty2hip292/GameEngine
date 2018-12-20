@@ -19,6 +19,7 @@ public class Application extends Canvas implements Runnable {
 	
 	public static void main(String[] args) {
 		new Application();
+		new gameobjects.Box(); // just to test things
 	}
 	
 	public Application() {

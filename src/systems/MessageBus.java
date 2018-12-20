@@ -85,6 +85,7 @@ public class MessageBus implements Runnable {
 		}else {
 			Class<? extends Object> c = m.clazz;
 			System s = this.registeredSystems.get(c);
+			//java.lang.System.out.println(String.format("%s %s %s", m.getClass(), m.clazz, s));
 			if(s == null) {
 				s = registerAllSuperClasses(m.getClass());
 				if(s == null) {
