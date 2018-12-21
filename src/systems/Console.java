@@ -4,7 +4,7 @@ import java.util.Scanner;
 
 public class Console extends System {
 
-	private static Scanner in = new Scanner(java.lang.System.in);
+	private InputStreamMerger in = new InputStreamMerger(java.lang.System.in);
 	
 	public Console(game.Application owner) {
 		super(owner);
@@ -12,20 +12,34 @@ public class Console extends System {
 	
 	public void run() {
 		while(running) {
+			if(this.mqueue.size() != 0) {
+				handleMessage(mqueue.poll());
+			}
 			try {
-				if(java.lang.System.in.available() != 0) {
-					mb.addPriorityMessage(messages.Message.readMessage(in.nextLine()));
+				if(in.hasNextLine()) {
+					String s = in.nextLine();
+					println("read " + s);
+					mb.addPriorityMessage(messages.Message.readMessage(s));
 				}
-			}catch(Exception e) { }
+			}catch(Exception e) {
+				e.printStackTrace();
+			}
 			if(this.mqueue.size() != 0) {
 				mqueue.poll();
 			}
 		}
+		in.running = false;
 	}
 	
-	protected void handleMessage(messages.Message m) { }
+	protected void handleMessage(messages.Message m) {
+		java.lang.System.out.println(m);
+		if(m instanceof messages.PipeToConsole) {
+			java.lang.System.out.println("here");
+			in.addStringToStream(((messages.PipeToConsole) m).getMsg().toString());
+		}
+	}
 	
 	protected Class<? extends messages.Message> messageTypeToHandle() {
-		return messages.types.Null.class;
+		return messages.types.HandleByConsole.class;
 	}
 }

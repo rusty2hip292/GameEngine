@@ -89,7 +89,7 @@ public class E6POS {
 			fs[i] = a.pos.get(i).add(b.pos.get(0).mult(a.ori.get(0, i))).add(b.pos.get(1).mult(a.ori.get(1, i))).add(b.pos.get(2).mult(a.ori.get(2, i)));
 		}
 		Vector pos = new Vector(fs);
-		System.out.println(a + " + " + b + "\n = " + new E6POS(pos, o));
+		//System.out.println(a + " + " + b + "\n = " + new E6POS(pos, o));
 		return new E6POS(pos, o);
 	}
 	

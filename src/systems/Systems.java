@@ -1,6 +1,8 @@
 package systems;
 
 public class Systems {
+	
+	public static boolean running = true;
 
 	public static void startAll(game.Application wrapper) {
 		MessageBus.bus(wrapper).start();
@@ -11,5 +13,6 @@ public class Systems {
 	
 	public static void stopAll() {
 		MessageBus.bus(null).stopAllRegisteredSystems();
+		running = false;
 	}
 }
