@@ -1,11 +1,14 @@
 package vector;
 
+import java.util.HashMap;
+
 import function.Function;
 import function.Value;
 
 public class Vector {
 
 	private final Function[] vect;
+	private HashMap<String, Double> params = new HashMap<String, Double>();
 	
 	public Vector(Function... componants) {
 		this.vect = componants;
@@ -113,7 +116,7 @@ public class Vector {
 	public String evalString() {
 		String[] s = new String[this.size()];
 		for(int i = 0; i < this.size(); i++) {
-			s[i] = "" + this.vect[i].evaluate();
+			s[i] = "" + this.vect[i].evaluate(params);
 		}
 		return toString(s);
 	}
@@ -124,5 +127,31 @@ public class Vector {
 			s += ", " + o[i];
 		}
 		return s + ">";
+	}
+	
+	public matrix.Matrix colVector() {
+		matrix.Matrix m = new matrix.Matrix(this.size(), 1);
+		for(int i = 0; i < this.size(); i++) {
+			m.setValue(i, 0, vect[i]);
+		}
+		return m;
+	}
+	public matrix.Matrix rowVector() {
+		matrix.Matrix m = new matrix.Matrix(1, this.size());
+		for(int i = 0; i < this.size(); i++) {
+			m.setValue(0, i, vect[i]);
+		}
+		return m;
+	}
+	
+	public void setParams(HashMap<String, Double> params) {
+		this.params = params;
+	}
+	
+	public Vector evaluate() {
+		for(int i = 0; i < this.size(); i++) {
+			vect[i] = vect[i].toValue(params);
+		}
+		return this;
 	}
 }

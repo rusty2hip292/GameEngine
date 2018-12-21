@@ -230,6 +230,7 @@ public class Matrix {
 			det = det.add(this.matrix[r][0].mult(cofactors.matrix[r][0]));
 		}
 		adj.scale(det.reciprocal());
+		adj.params = this.params;
 		return adj;
 	}
 	
@@ -302,7 +303,9 @@ public class Matrix {
 	}
 	
 	public Matrix copy() {
-		return new Matrix(this);
+		Matrix temp = new Matrix(this);
+		temp.params = this.params;
+		return temp;
 	}
 	
 	public Vector colVector(int col) {
@@ -310,7 +313,9 @@ public class Matrix {
 		for(int r = 0; r < rows; r++) {
 			column[r] = matrix[r][col];
 		}
-		return new Vector(column);
+		Vector v = new Vector(column);
+		v.setParams(params);
+		return v;
 	}
 	public Vector rowVector(int row) {
 		return new Vector(matrix[row]);
@@ -326,5 +331,9 @@ public class Matrix {
 			}
 		}
 		return this;
+	}
+	
+	public HashMap<String, Double> getParams() {
+		return this.params;
 	}
 }

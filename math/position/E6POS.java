@@ -11,6 +11,7 @@ public class E6POS {
 
 	public static final Matrix rotZ = new Matrix(3, 3, "a cos", "a sin -", "0", "a sin", "a cos", "0", "0", "0", "1"), rotY = new Matrix(3, 3, "b cos", "0", "b sin", "0", "1", "0", "b sin -", "0", "b cos"), rotX = new Matrix(3, 3, "1", "0", "0", "0", "c cos", "c sin -", "0", "c sin", "c cos");
 	public static final Matrix rotABC = rotX.invert().mult(rotY.invert()).mult(rotZ.invert());
+	public static final Matrix invertOri = rotZ.invert().mult(rotY.invert()).mult(rotX.invert());
 	public static final Matrix identity = new Matrix(3, 3, 1, 0, 0, 0, 1, 0, 0, 0, 1);
 	public static final Matrix planes = new Matrix(3, 3, 0, 1, 1, 1, 0, 1, 1, 1, 0);
 	private static Function cos, sin;
@@ -20,14 +21,40 @@ public class E6POS {
 	private vector.Vector pos;
 	private Matrix ori = identity.copy();
 	private double a, b, c;
+	private final E6POS inverse;
 	
+	static {
+		init();
+	}
+	
+	private static E6POS invert(E6POS p) {
+		Matrix invO = p.ori.invert().condense();
+		return new E6POS(p.ori.multAndEval(p.pos.colVector()).colVector(0), invO, p);
+	}
+
 	public E6POS(double x, double y, double z, double a, double b, double c) {
 		pos = new vector.Vector(x, y, z);
 		ori = transformAxisABC(ori, a, b, c);
 		this.a = a; this.b = b; this.c = c;
+		inverse = invert(this);
+	}
+	
+	public E6POS(Vector pos, Matrix ori, E6POS p) {
+		this.pos = pos; this.ori = ori; this.recalcABC();
+		inverse = p;
 	}
 	public E6POS(Vector pos, Matrix ori) {
 		this.pos = pos; this.ori = ori; this.recalcABC();
+		inverse = invert(this);
+	}
+	
+	public E6POS invert() {
+		return this.inverse;
+	}
+	
+	public String toString() {
+		//System.out.println(pos);
+		return pos.evalString() + new Vector(a, b, c).evalString();
 	}
 	
 	private void recalcABC() {
@@ -55,8 +82,14 @@ public class E6POS {
 	}
 	
 	public static E6POS compose(E6POS a, E6POS b) {
-		Matrix o = transformAxisABC(a.ori, b.a, b.b, b.c);
-		Vector pos = a.pos.add(a.ori.colVector(0).mult(b.pos.get(0))).add(a.ori.colVector(1).mult(b.pos.get(1))).add(a.ori.colVector(2).mult(b.pos.get(2)));
+		Matrix o = b.ori.multAndEval(a.ori);
+		//Vector pos = a.pos.add(a.ori.colVector(0).mult(b.pos.get(0))).add(a.ori.colVector(1).mult(b.pos.get(1))).add(a.ori.colVector(2).mult(b.pos.get(2)));
+		Function[] fs = new Function[3];
+		for(int i = 0; i < 3; i++) {
+			fs[i] = a.pos.get(i).add(b.pos.get(0).mult(a.ori.get(0, i))).add(b.pos.get(1).mult(a.ori.get(1, i))).add(b.pos.get(2).mult(a.ori.get(2, i)));
+		}
+		Vector pos = new Vector(fs);
+		System.out.println(a + " + " + b + "\n = " + new E6POS(pos, o));
 		return new E6POS(pos, o);
 	}
 	
@@ -64,11 +97,13 @@ public class E6POS {
 		return compose(base, this);
 	}
 	
+	/*
 	public E6POS invert() {
-		Vector p = this.pos.neg();
-		Matrix o = this.transformA(this.transformB(this.transformC(this.ori.copy(), -this.c), -this.b), -this.a);
-		return new E6POS(p, o);
+		Vector p = this.pos.clone().evaluate().neg();
+		Matrix o = invertOri(identity, this.a, this.b, this.c);
+		return new E6POS(this.rotation().multAndEval(p.colVector()).colVector(0), o);
 	}
+	*/
 	
 	public Function x() {
 		return this.pos.get(0);
@@ -139,7 +174,24 @@ public class E6POS {
 		rotABC.setParam("A", A);
 		rotABC.setParam("B", B);
 		rotABC.setParam("C", C);
+		//System.out.println(rotABC.copy().condense());
 		return rotABC.multAndEval(temp);
+	}
+	public static Matrix invertOri(Matrix initial, double A, double B, double C) {
+		if(initial.rows != 3 && initial.cols != 3) {
+			throw new IllegalArgumentException();
+		}
+		temp = new Matrix(initial);
+		if(degrees) {
+			A = degToRad(A);
+			B = degToRad(B);
+			C = degToRad(C);
+		}
+		invertOri.setParam("A", -A);
+		invertOri.setParam("B", -B);
+		invertOri.setParam("C", -C);
+		//System.out.println(invertOri.copy().condense());
+		return invertOri.multAndEval(temp);
 	}
 	public static Matrix transformAxisABC_OLD(Matrix initial, double A, double B, double C) {
 		if(initial.rows != 3 && initial.cols != 3) {
@@ -237,5 +289,15 @@ public class E6POS {
 			B *= 180 / Math.PI;
 		}
 		System.out.println(String.format("%4.3f\n%4.3f\n%4.3f", A, B, C));
+	}
+	
+	public Matrix ori() {
+		return this.ori;
+	}
+	public Matrix rotation() {
+		rotABC.setParam("A", this.a);
+		rotABC.setParam("B", this.b);
+		rotABC.setParam("C", this.c);
+		return rotABC;
 	}
 }
