@@ -14,6 +14,10 @@ public class Window extends Canvas {
 	public Window(int width, int height, String title, game.Application game) {
 		
 		frame = new JFrame(title);
+		eventlisteners.Window w = new eventlisteners.Window();
+		frame.addWindowFocusListener(w);
+		frame.addWindowListener(w);
+		frame.addWindowStateListener(w);
 
 		frame.setPreferredSize(new Dimension(width, height));
 		frame.setMaximumSize(new Dimension(width, height));
