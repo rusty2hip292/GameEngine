@@ -10,7 +10,9 @@ import function.*;
 public class E6POS {
 
 	public static final Matrix rotZ = new Matrix(3, 3, "a cos", "a sin -", "0", "a sin", "a cos", "0", "0", "0", "1"), rotY = new Matrix(3, 3, "b cos", "0", "b sin", "0", "1", "0", "b sin -", "0", "b cos"), rotX = new Matrix(3, 3, "1", "0", "0", "0", "c cos", "c sin -", "0", "c sin", "c cos");
+	public static final Matrix rotZ2 = new Matrix(3, 3, "a2 cos", "a2 sin -", "0", "a2 sin", "a2 cos", "0", "0", "0", "1"), rotY2 = new Matrix(3, 3, "b2 cos", "0", "b2 sin", "0", "1", "0", "b2 sin -", "0", "b2 cos"), rotX2 = new Matrix(3, 3, "1", "0", "0", "0", "c2 cos", "c2 sin -", "0", "c2 sin", "c2 cos");
 	public static final Matrix rotABC = rotX.invert().mult(rotY.invert()).mult(rotZ.invert());
+	public static final Matrix rotABC2 = rotX2.invert().mult(rotY2.invert()).mult(rotZ2.invert()).mult(rotABC);
 	public static final Matrix invertOri = rotZ.invert().mult(rotY.invert()).mult(rotX.invert());
 	public static final Matrix identity = new Matrix(3, 3, 1, 0, 0, 0, 1, 0, 0, 0, 1);
 	public static final Matrix planes = new Matrix(3, 3, 0, 1, 1, 1, 0, 1, 1, 1, 0);
@@ -21,7 +23,6 @@ public class E6POS {
 	private vector.Vector pos;
 	private Matrix ori = identity.copy();
 	private double a, b, c;
-	private final E6POS inverse;
 	
 	static {
 		init();
@@ -29,27 +30,21 @@ public class E6POS {
 	
 	private static E6POS invert(E6POS p) {
 		Matrix invO = p.ori.invert().condense();
-		return new E6POS(p.ori.multAndEval(p.pos.colVector()).colVector(0), invO, p);
+		Vector temp = p.ori.mult(p.pos.colVector()).colVector(0).neg();
+		return new E6POS(temp, invO);
+	}
+	public E6POS invert() {
+		return invert(this);
 	}
 
 	public E6POS(double x, double y, double z, double a, double b, double c) {
 		pos = new vector.Vector(x, y, z);
 		ori = transformAxisABC(ori, a, b, c);
 		this.a = a; this.b = b; this.c = c;
-		inverse = invert(this);
 	}
 	
-	public E6POS(Vector pos, Matrix ori, E6POS p) {
-		this.pos = pos; this.ori = ori; this.recalcABC();
-		inverse = p;
-	}
 	public E6POS(Vector pos, Matrix ori) {
 		this.pos = pos; this.ori = ori; this.recalcABC();
-		inverse = invert(this);
-	}
-	
-	public E6POS invert() {
-		return this.inverse;
 	}
 	
 	public String toString() {
@@ -59,6 +54,7 @@ public class E6POS {
 	
 	private void recalcABC() {
 		Matrix units = this.ori;
+		//System.out.println(units);
 		Vector y = units.rowVector(1), z = units.rowVector(2);
 		double sign = y.get(2).div(z.get(2)).evaluate();
 		Vector t = y.sub(z.mult(sign));
@@ -73,7 +69,7 @@ public class E6POS {
 		units = transformAxisABC(units, 0, 0, -C);
 		Vector x = units.rowVector(0);
 		double B = -Math.atan2(x.get(2).evaluate(), x.get(0).square().add(x.get(1).square()).sqrt().evaluate());
-		double A = Math.atan2(x.get(1).evaluate(), x.get(0).square().sqrt().evaluate());
+		double A = Math.atan2(x.get(1).evaluate(), x.get(0).evaluate());//x.get(0).square().sqrt().evaluate());
 		if(degrees) {
 			A *= 180 / Math.PI;
 			B *= 180 / Math.PI;
@@ -82,7 +78,7 @@ public class E6POS {
 	}
 	
 	public static E6POS compose(E6POS a, E6POS b) {
-		Matrix o = b.ori.multAndEval(a.ori);
+		Matrix o = b.ori.mult(new Matrix(a.ori).condense()).condense();
 		//Vector pos = a.pos.add(a.ori.colVector(0).mult(b.pos.get(0))).add(a.ori.colVector(1).mult(b.pos.get(1))).add(a.ori.colVector(2).mult(b.pos.get(2)));
 		Function[] fs = new Function[3];
 		for(int i = 0; i < 3; i++) {
@@ -174,6 +170,7 @@ public class E6POS {
 		rotABC.setParam("A", A);
 		rotABC.setParam("B", B);
 		rotABC.setParam("C", C);
+		//System.out.println(rotABC.getParams());
 		//System.out.println(rotABC.copy().condense());
 		return rotABC.multAndEval(temp);
 	}

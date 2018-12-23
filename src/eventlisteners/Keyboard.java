@@ -36,12 +36,12 @@ public class Keyboard implements java.awt.event.KeyListener {
 	@Override
 	public void keyPressed(KeyEvent e) {
 		// TODO Auto-generated method stub
-		System.out.println("pressed " + e.getKeyChar());
+		//System.out.println("pressed " + e.getKeyChar());
 	}
 
 	@Override
 	public void keyReleased(KeyEvent e) {
 		// TODO Auto-generated method stub
-		System.out.println("released " + e.getKeyChar());
+		//System.out.println("released " + e.getKeyChar());
 	}
 }

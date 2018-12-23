@@ -18,49 +18,49 @@ public class Mouse implements java.awt.event.MouseListener, java.awt.event.Mouse
 	@Override
 	public void mouseClicked(MouseEvent e) {
 		// TODO Auto-generated method stub
-		System.out.println(a.getMousePosition());
-		System.out.println("clicked");
+		//System.out.println(a.getMousePosition());
+		//System.out.println("clicked");
 	}
 
 	@Override
 	public void mousePressed(MouseEvent e) {
 		// TODO Auto-generated method stub
-		System.out.println("pressed");
+		//System.out.println("pressed");
 	}
 
 	@Override
 	public void mouseReleased(MouseEvent e) {
 		// TODO Auto-generated method stub
-		System.out.println("released");
+		//System.out.println("released");
 	}
 
 	@Override
 	public void mouseEntered(MouseEvent e) {
 		// TODO Auto-generated method stub
-		System.out.println("entered");
+		//System.out.println("entered");
 	}
 
 	@Override
 	public void mouseExited(MouseEvent e) {
 		// TODO Auto-generated method stub
-		System.out.println("exited");
+		//System.out.println("exited");
 	}
 
 	@Override
 	public void mouseWheelMoved(MouseWheelEvent e) {
 		// TODO Auto-generated method stub
-		System.out.println("wheel moved");
+		//System.out.println("wheel moved");
 	}
 
 	@Override
 	public void mouseDragged(MouseEvent e) {
 		// TODO Auto-generated method stub
-		System.out.println("dragged");
+		//System.out.println("dragged");
 	}
 
 	@Override
 	public void mouseMoved(MouseEvent e) {
 		// TODO Auto-generated method stub
-		System.out.println("moved");
+		//System.out.println("moved");
 	}
 }

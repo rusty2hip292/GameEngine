@@ -24,9 +24,6 @@ public class Console extends System {
 			}catch(Exception e) {
 				e.printStackTrace();
 			}
-			if(this.mqueue.size() != 0) {
-				mqueue.poll();
-			}
 		}
 		in.running = false;
 	}
@@ -37,6 +34,10 @@ public class Console extends System {
 			java.lang.System.out.println("here");
 			in.addStringToStream(((messages.PipeToConsole) m).getMsg().toString());
 		}
+	}
+	
+	private String removeFirstWord(String s) {
+		return s.substring(s.indexOf(" ") + 1);
 	}
 	
 	protected Class<? extends messages.Message> messageTypeToHandle() {

@@ -44,7 +44,7 @@ public class InputStreamMerger implements Runnable {
 	}
 	
 	public void addStringToStream(String s) {
-		java.lang.System.out.println("adding " + s);
+		//java.lang.System.out.println("adding " + s);
 		if(s == null) {
 			return;
 		}
@@ -58,7 +58,7 @@ public class InputStreamMerger implements Runnable {
 		if(lines.size() == 0) {
 			return "";
 		}
-		java.lang.System.out.println("polling " + lines.peek());
+		//java.lang.System.out.println("polling " + lines.peek());
 		return lines.poll();
 	}
 }

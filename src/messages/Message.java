@@ -3,8 +3,7 @@ package messages;
 import java.util.Scanner;
 
 public abstract class Message {
-
-	public static Class<? extends Message> clazz = messages.types.Null.class;
+	
 	private static Scanner scanner;
 	
 	protected final static String type = "";
@@ -42,4 +41,6 @@ public abstract class Message {
 	public void errlog() {
 		systems.Logger.log("Could not handle message type " + this.getClass(), systems.Logger.LogType.ERR_LOG);
 	}
+	
+	public abstract Class<? extends Message> clazz();
 }

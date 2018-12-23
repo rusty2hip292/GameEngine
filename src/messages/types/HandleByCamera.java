@@ -2,7 +2,7 @@ package messages.types;
 
 public abstract class HandleByCamera extends messages.Message {
 
-	static {
-		clazz = HandleByCamera.class;
+	public Class<? extends messages.Message> clazz() {
+		return HandleByCamera.class;
 	}
 }

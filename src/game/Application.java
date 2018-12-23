@@ -11,7 +11,7 @@ public class Application extends Canvas implements Runnable {
 	
 	private static final long serialVersionUID = 1L;
 	
-	public static final int WIDTH = 640, HEIGHT = WIDTH * 3 / 4;
+	public static int WIDTH = 640, HEIGHT = WIDTH * 3 / 4;
 	public double fps = 60.0;
 	private Thread thread;
 	private volatile boolean running = false;
@@ -30,6 +30,7 @@ public class Application extends Canvas implements Runnable {
 		this.addMouseWheelListener(m);
 		eventlisteners.Keyboard k = new eventlisteners.Keyboard(this);
 		this.addKeyListener(k);
+		window.fillFrame();
 	}
 	
 	public synchronized void start() {

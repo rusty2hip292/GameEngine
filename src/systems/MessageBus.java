@@ -79,14 +79,16 @@ public class MessageBus implements Runnable {
 	}
 	
 	private void handleMessage(messages.Message m) {
-		java.lang.System.out.println("handling " + m);
+		java.lang.System.out.println("handling " + m + " " + m.clazz());
+		java.lang.System.out.println(this.registeredSystems);
 		if(m instanceof messages.types.HandleByApplication) {
 			owner.handleMessage(m);
 		}else {
-			Class<? extends Object> c = m.clazz;
+			Class<? extends Object> c = m.clazz();
 			System s = this.registeredSystems.get(c);
 			//java.lang.System.out.println(String.format("%s %s %s", m.getClass(), m.clazz, s));
 			if(s == null) {
+				java.lang.System.out.println("having to register");
 				s = registerAllSuperClasses(m.getClass());
 				if(s == null) {
 					Logger.log("Cannot find a system registered to handle " + m.getClass() + ": " + m, Logger.LogType.ERR_LOG);
